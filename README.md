@@ -10,6 +10,9 @@ Price of selling to the grid(c)			15 Rs/kWh
 
 E_L(t) = demand(t)
 
+Ac = 1 if action == 0 else 0
+Ad = 1 if action == 1 else 0
+
 # Facts				
 PVWatts: Hourly PV Performance Data
 Requested Location:,moratuwa

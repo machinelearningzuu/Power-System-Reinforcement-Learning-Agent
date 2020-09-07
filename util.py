@@ -19,7 +19,11 @@ def get_data():
         preprocess_data()
     data = pd.read_csv(final_csv_path)
     pv_values = data['PV_component'].values
-    demands = data['Demand']
+    demands = data['Demand'].values
+    hours = data['Hour'].values
+    days = data['Day'].values
+    months = data['Month'].values
+    return pv_values, demands, hours, days, months
 
 def build_state_space(pv_value, Eb, demand):
     pv_bins = np.linspace(PVmin, PVmax, n_bins)
@@ -28,10 +32,7 @@ def build_state_space(pv_value, Eb, demand):
     demand_bins = np.linspace(Dmin, Dmax, n_bins)
     demand_state = np.digitize(demand,demand_bins,right=True)
 
-    demand_bins = np.linspace(Dmin, Dmax, n_bins)
-    demand_state = np.digitize(demand,demand_bins,right=True)
-
     Eb_bins = np.linspace(Ebmin, Ebmax, n_bins)
     Eb_state = np.digitize(Eb,Eb_bins,right=True)
 
-    return str(pv_state) + str(Eb_state) + str(demand_state)
+    return int(str(pv_state) + str(Eb_state) + str(demand_state))
