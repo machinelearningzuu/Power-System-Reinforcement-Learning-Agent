@@ -17,6 +17,7 @@ def preprocess_data():
     demand_data = demand_data.loc[:min_len]
 
     df = pd.concat([demand_data['Demand'], newdata], axis=1)
+    df['PV_component'] = df['PV_component'].fillna(2.5)
     df = df[data_columns]
     df.to_csv(final_csv_path, index=False)
 
@@ -54,5 +55,4 @@ def build_state_space(pv_value, Eb, demand):
 
     Eb_bins = np.linspace(Ebmin, Ebmax, n_bins)
     Eb_state = np.digitize(Eb,Eb_bins,right=True)
-
     return int(str(pv_state) + str(Eb_state) + str(demand_state))

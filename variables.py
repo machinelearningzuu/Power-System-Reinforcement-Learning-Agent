@@ -2,19 +2,19 @@ Ebmin = 0
 Ebmax = 10
 
 PVmin = 0
-PVmax = 3.003645
+PVmax = 1500
 
-Dmin = 1.5
-Dmax = 6.5
+Dmin = 0
+Dmax = 340
 
 n_bins = 10
-efficiency = 0.7
+efficiency = 0.8
 
 c = 20
 p = 15
-learning_rate = 10e-3
-eps = 0.9
-discount_factor = 0.9
+learning_rate = 10e-4
+eps = 0.8
+discount_factor = 0.8
 num_days = 365
 
 initial_state = (PVmin, Ebmax, 2.5)

@@ -40,9 +40,8 @@ class Agent(object):
                 Ed  = state_values[2]
                 E_grid = Ed - Epv + Eb
 
-                cost = c*max(E_grid, 0) + p*min(E_grid, 0)
-                reward = cost * -1
-
+                reward = c*max(E_grid, 0) + p*min(E_grid, 0)
+                reward = reward * 0.00001
                 new_state_values, new_state = self.env.step(total_time_steps, state_values, action)
 
                 self.q_table[state,action] = (1 - learning_rate) * self.q_table[state,action] \
@@ -51,7 +50,6 @@ class Agent(object):
                 day_reward -= reward
                 state = new_state
                 state_values = new_state_values
-
                 total_time_steps += 1
             total_time_steps += 1
             total_rewards_in_days.append(day_reward)
