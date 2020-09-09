@@ -8,11 +8,25 @@ def preprocess_data():
     data = pd.read_csv(data_csv_path)
 
     data = data[data.columns.values[:3].tolist() + [data.columns.values[-1]]]
-    df = pd.merge(demand_data, data, on='Hour')
+    df = pd.merge(demand_data, data, on=('Month', 'Day'))
     df = df[data_columns]
     df = df.sort_values(["Month", "Day"], ascending = (True, True))
 
     df.to_csv(final_csv_path, index=False)
+
+# preprocess_data()
+def create_time(Timestamp):
+    date, time, _ = Timestamp.split(' ')
+    month, day, _ = date.split('/')
+    return month, day
+
+def preprocess_demand_csv():
+    df = pd.read_csv(demand_csv_path)
+    df = df[df['Demand'].notna()]
+    df = df[['Timestamp', 'Demand']]
+    df['Month'], df['Day'] = zip(*df['Timestamp'].map(create_time))
+    del df['Timestamp']
+    df.to_csv(demand_csv_path, index=False)
 
 def get_data():
     if not os.path.exists(final_csv_path):

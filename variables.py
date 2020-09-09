@@ -20,9 +20,9 @@ num_days = 365
 initial_state = (PVmin, Ebmax, 2.5)
 initial_action = 1 # (charging, discharging)
 
-demand_csv_path = 'demand.csv'
-data_csv_path = 'solar op.csv'
-final_csv_path = 'final_csv.csv'
-q_table_path = 'power system agent q learning.npy'
+demand_csv_path = 'Data/demand.csv'
+data_csv_path = 'Data/solar.csv'
+final_csv_path = 'Data/final_csv.csv'
+q_table_path = 'weights/power system agent q learning.npy'
 
 data_columns = ['Month','Day','Hour','PV_component','Demand']
