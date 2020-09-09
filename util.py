@@ -7,14 +7,19 @@ def preprocess_data():
     demand_data = pd.read_csv(demand_csv_path)
     data = pd.read_csv(data_csv_path)
 
-    data = data[data.columns.values[:3].tolist() + [data.columns.values[-1]]]
-    df = pd.merge(demand_data, data, on=('Month', 'Day'))
-    df = df[data_columns]
-    df = df.sort_values(["Month", "Day"], ascending = (True, True))
+    newdata = pd.DataFrame(np.repeat(data.values,4,axis=0))
+    newdata.columns = data.columns
 
+    min_len = min(len(newdata), len(demand_data))
+    newdata = newdata[newdata.columns.values[:3].tolist() + [newdata.columns.values[-1]]]
+
+    newdata = newdata.loc[:min_len]
+    demand_data = demand_data.loc[:min_len]
+
+    df = pd.concat([demand_data['Demand'], newdata], axis=1)
+    df = df[data_columns]
     df.to_csv(final_csv_path, index=False)
 
-# preprocess_data()
 def create_time(Timestamp):
     date, time, _ = Timestamp.split(' ')
     month, day, _ = date.split('/')
@@ -24,6 +29,7 @@ def preprocess_demand_csv():
     df = pd.read_csv(demand_csv_path)
     df = df[df['Demand'].notna()]
     df = df[['Timestamp', 'Demand']]
+    df.fillna(0)
     df['Month'], df['Day'] = zip(*df['Timestamp'].map(create_time))
     del df['Timestamp']
     df.to_csv(demand_csv_path, index=False)

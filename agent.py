@@ -68,7 +68,7 @@ class Agent(object):
         fig.suptitle('Power System Agent Cost Analysis', fontsize=20)
         plt.xlabel('days')
         plt.ylabel('Cost')
-        fig.savefig('weights/power_system_agent.png')
+        fig.savefig(cum_cost_path)
 
     def save_q_table(self):
         np.save(q_table_path, self.q_table)

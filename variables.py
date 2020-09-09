@@ -24,5 +24,5 @@ demand_csv_path = 'Data/demand.csv'
 data_csv_path = 'Data/solar.csv'
 final_csv_path = 'Data/final_csv.csv'
 q_table_path = 'weights/power system agent q learning.npy'
-
+cum_cost_path = 'weights/power_system_agent.png'
 data_columns = ['Month','Day','Hour','PV_component','Demand']
