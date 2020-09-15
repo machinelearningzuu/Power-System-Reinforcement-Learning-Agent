@@ -21,8 +21,8 @@ class Environment(object):
         return np.random.choice([0,1])
 
     def step(self, time_step, prev_state_values, action):
-        Ac = 1 if action == 0 else 0
-        Ad = 1 if action == 1 else 0
+        Ac = 100 if action == 0 else 0
+        Ad = 100 if action == 1 else 0
 
         Eb_t = prev_state_values[1]
         Eb_t1 = Eb_t + (efficiency *  Ac) - (Ad / efficiency)

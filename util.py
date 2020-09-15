@@ -5,7 +5,7 @@ from variables import*
 
 def preprocess_data():
     demand_data = pd.read_csv(demand_csv_path)
-    data = pd.read_csv(data_csv_path)
+    data = pd.read_csv(data_csv_path) # solar csv
 
     newdata = pd.DataFrame(np.repeat(data.values,4,axis=0))
     newdata.columns = data.columns
@@ -28,9 +28,8 @@ def create_time(Timestamp):
 
 def preprocess_demand_csv():
     df = pd.read_csv(demand_csv_path)
-    df = df[df['Demand'].notna()]
     df = df[['Timestamp', 'Demand']]
-    df.fillna(0)
+    df.fillna(Dmin)
     df['Month'], df['Day'] = zip(*df['Timestamp'].map(create_time))
     del df['Timestamp']
     df.to_csv(demand_csv_path, index=False)

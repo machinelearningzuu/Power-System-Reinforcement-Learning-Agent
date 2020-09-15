@@ -25,9 +25,11 @@ class Agent(object):
 
     def train(self):
         total_rewards_in_days = []
+        Egrid_in_days = []
         total_time_steps = 0
         for day in range(num_days):
             day_reward = 0
+            Egrid_day = 0
             state_values, state = self.env.reset()
             while (self.env.hours[total_time_steps] != 23):
                 if random.uniform(0,1) < eps:
@@ -38,22 +40,25 @@ class Agent(object):
                 Epv = state_values[0]
                 Eb  = state_values[1]
                 Ed  = state_values[2]
-                E_grid = Ed - Epv + Eb
-
-                reward = c*max(E_grid, 0) + p*min(E_grid, 0)
-                reward = reward * 0.00001
+                E_grid = Ed - Epv - Eb
+                # print(E_grid)
+                cost = c*max([E_grid, 0]) + p*min([E_grid, 0])
+                reward = -1e-4 * cost
                 new_state_values, new_state = self.env.step(total_time_steps, state_values, action)
 
                 self.q_table[state,action] = (1 - learning_rate) * self.q_table[state,action] \
                                                 + learning_rate * (reward + discount_factor * np.max(self.q_table[new_state,:]))
 
                 day_reward -= reward
+                Egrid_day += E_grid
                 state = new_state
                 state_values = new_state_values
                 total_time_steps += 1
             total_time_steps += 1
             total_rewards_in_days.append(day_reward)
+            Egrid_in_days.append(Egrid_day)
         Agent.plot_cumulative_costs(total_rewards_in_days,num_days)
+        Agent.plot_cumulative_Egrid(Egrid_in_days,num_days)
 
     @staticmethod
     def plot_cumulative_costs(total_rewards_in_days,num_days):
@@ -67,6 +72,19 @@ class Agent(object):
         plt.xlabel('days')
         plt.ylabel('Cost')
         fig.savefig(cum_cost_path)
+
+    @staticmethod
+    def plot_cumulative_Egrid(Egrid_in_days,num_days):
+        # plot the cumulative average rewards
+        cum_Egrid = np.cumsum(Egrid_in_days)
+        cum_average_Egrid = cum_Egrid / np.arange(1,num_days+1)
+
+        fig = plt.figure()
+        plt.plot(cum_average_Egrid)
+        fig.suptitle('Power System Agent Grid Power Analysis', fontsize=20)
+        plt.xlabel('days')
+        plt.ylabel('Egrid')
+        fig.savefig(Egrid_path)
 
     def save_q_table(self):
         np.save(q_table_path, self.q_table)
