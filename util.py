@@ -5,35 +5,37 @@ from variables import*
 
 def preprocess_data():
     demand_data = pd.read_csv(demand_csv_path)
-    data = pd.read_csv(data_csv_path) # solar csv
+    solar_data = pd.read_csv(data_csv_path)
 
-    newdata = pd.DataFrame(np.repeat(data.values,4,axis=0))
-    newdata.columns = data.columns
+    solar_data = solar_data[['Timestamp', 'PV_component']]
+    demand_data = demand_data[['Timestamp', 'Demand']]
 
-    min_len = min(len(newdata), len(demand_data))
-    newdata = newdata[newdata.columns.values[:3].tolist() + [newdata.columns.values[-1]]]
+    df_final = pd.merge(demand_data, solar_data, on='Timestamp')
+    df_final['PV_component'] = df_final['PV_component'].fillna(2.5)
+    df_final['Demand'] = df_final['Demand'].fillna(0)
 
-    newdata = newdata.loc[:min_len]
-    demand_data = demand_data.loc[:min_len]
-
-    df = pd.concat([demand_data['Demand'], newdata], axis=1)
-    df['PV_component'] = df['PV_component'].fillna(2.5)
+    df = preprocess_final_df(df_final)
     df = df[data_columns]
     df.to_csv(final_csv_path, index=False)
 
 def create_time(Timestamp):
-    date, time, _ = Timestamp.split(' ')
+    date, time, time_half = Timestamp.split(' ')
     month, day, _ = date.split('/')
-    return month, day
+    hour, minute, second = time.split(':')
+    hour = int(hour)
+    if time_half.strip().lower() == 'am':
+        if hour == 12:
+            hour = 0
+    elif time_half.strip().lower() == 'pm':
+        if hour != 12:
+            hour = hour + 12
+    return month, day, hour
 
-def preprocess_demand_csv():
-    df = pd.read_csv(demand_csv_path)
-    df = df[['Timestamp', 'Demand']]
-    df.fillna(Dmin)
-    df['Month'], df['Day'] = zip(*df['Timestamp'].map(create_time))
+def preprocess_final_df(df):
+    df = df[['Timestamp', 'Demand', 'PV_component']]
+    df['Month'], df['Day'], df['Hour'] = zip(*df['Timestamp'].map(create_time))
     del df['Timestamp']
-    df.to_csv(demand_csv_path, index=False)
-
+    return df
 def get_data():
     if not os.path.exists(final_csv_path):
         preprocess_data()
