@@ -9,15 +9,14 @@ Dmax = 340
 
 n_bins = 10
 
-c = 20
-p = 15
+p = 22
 learning_rate = 10e-1
 eps = 0.5
 discount_factor = 0.99
 num_days = 365
 
 initial_state = (PVmin, Ebmax, 2.5)
-initial_action = 1 # (charging, discharging)
+initial_action = 1 # (charging, discharging, Nothing)
 
 demand_csv_path = 'Data/demand.csv'
 data_csv_path = 'Data/solar.csv'

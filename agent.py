@@ -15,7 +15,7 @@ class Agent(object):
         high_state_value = self.env.state_space(PVmax, Ebmax, Dmax)
 
         num_states = high_state_value - low_state_value + 1
-        num_actions = 2
+        num_actions = 3
         if os.path.exists(q_table_path):
             print("Q table Loading !!!")
             self.load_q_table()
@@ -41,6 +41,14 @@ class Agent(object):
                 Eb  = state_values[1]
                 Ed  = state_values[2]
                 E_grid = Ed - Epv - Eb
+
+                if 18 <= self.env.hours[total_time_steps] < 22:
+                    c = 26.6
+                elif 5 <= self.env.hours[total_time_steps] < 18:
+                    c = 21.8
+                else:
+                    c = 15.4
+
                 cost = c*max([E_grid, 0]) + p*min([E_grid, 0])
                 reward = -cost
                 new_state_values, new_state = self.env.step(total_time_steps, state_values, action)
@@ -57,7 +65,7 @@ class Agent(object):
             total_rewards_in_days.append(day_reward)
             Egrid_in_days.append(Egrid_day)
         Agent.plot_cumulative_costs(total_rewards_in_days,num_days)
-        Agent.plot_cumulative_Egrid(Egrid_in_days,num_days)
+        # Agent.plot_cumulative_Egrid(Egrid_in_days,num_days)
 
     @staticmethod
     def plot_cumulative_costs(total_rewards_in_days,num_days):

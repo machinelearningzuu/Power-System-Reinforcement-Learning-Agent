@@ -18,11 +18,15 @@ class Environment(object):
 
     @staticmethod
     def sample_action():
-        return np.random.choice([0,1])
+        return np.random.choice([0,1, 2])
 
     def step(self, time_step, prev_state_values, action):
-        Ac = 10 if action == 0 else 0
-        Ad = 10 if action == 1 else 0
+        if action == 0:
+            Ac, Ad = 10, 0
+        elif action == 1:
+            Ac, Ad = 0, 10
+        elif action == 2:
+            Ac, Ad = 0, 0
 
         Eb_t = prev_state_values[1]
         Eb_t1 = Eb_t + Ac - Ad
