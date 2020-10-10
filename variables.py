@@ -26,3 +26,15 @@ q_table_path = 'weights/power system agent q learning.npy'
 cum_cost_path = 'weights/power_system_agent.png'
 Egrid_path = 'weights/E grid effiency.png'
 data_columns = ['Month','Day','Hour','PV_component','Demand']
+
+#Solar DNN estimator
+solar_dnn_csv = 'DNN/solar_forecasting.csv'
+solar_dnn_cols = ['Wind Speed (m/s)','Plane of Array Irradiance (W/m^2)','Cell Temperature (C)','AC System Output (W)']
+dim1 = 32
+dim2 = 1
+batch_size = 64
+validation_split = 0.2
+verbose=1
+epochs = 100
+solar_weights = 'weights/solar_model.h5'
+loss_img = 'weights/solar_loss.png'

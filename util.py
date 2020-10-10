@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from variables import*
 
 def preprocess_data():
@@ -57,3 +58,14 @@ def build_state_space(pv_value, Eb, demand):
     Eb_bins = np.linspace(Ebmin, Ebmax, n_bins)
     Eb_state = np.digitize(Eb,Eb_bins,right=True)
     return int(str(pv_state) + str(Eb_state) + str(demand_state))
+
+def load_dnn_data():
+    df = pd.read_csv(solar_dnn_csv)
+    df = df[solar_dnn_cols]
+    data  = df.dropna(axis = 0, how ='any')
+    X = data[solar_dnn_cols[:-1]].values
+
+    scaler = MinMaxScaler()
+    X = scaler.fit_transform(X)
+    Y = data[solar_dnn_cols[-1]].values
+    return X, Y
