@@ -15,12 +15,12 @@ class Agent(object):
         high_state_value = self.env.state_space(PVmax, Ebmax, Dmax)
 
         num_states = high_state_value - low_state_value + 1
-        num_actions = 3
+        num_actions = 2
         if os.path.exists(q_table_path):
-            print("Q table Loading !!!")
+            print("Q table Loading !!!\n")
             self.load_q_table()
         else:
-            print("Q table Initializing !!!")
+            print("Q table Initializing !!!\n")
             self.q_table = np.random.uniform(low = -1, high = 1 , size = (num_states,num_actions))
 
     def train(self):
@@ -31,7 +31,8 @@ class Agent(object):
             day_reward = 0
             Egrid_day = 0
             state_values, state = self.env.reset()
-            while (self.env.hours[total_time_steps] != 23):
+            # print("######################### Day {} #######################".format(day))
+            while not (self.env.hours[total_time_steps] == 23 and self.env.hours[total_time_steps+1] == 0):
                 if random.uniform(0,1) < eps:
                     action =  self.env.sample_action()
                 else:
@@ -42,6 +43,7 @@ class Agent(object):
                 Ed  = state_values[2]
                 E_grid = Ed - Epv - Eb
 
+
                 if 18 <= self.env.hours[total_time_steps] < 22:
                     c = 26.6
                 elif 5 <= self.env.hours[total_time_steps] < 18:
@@ -49,23 +51,32 @@ class Agent(object):
                 else:
                     c = 15.4
 
-                cost = c*max([E_grid, 0]) + p*min([E_grid, 0])
-                reward = -cost
+                cost = cost_lr * abs(c*max([E_grid, 0]) + p*min([E_grid, 0]))
+                if action == 0:
+                    reward = min(Epv, Ebmax - Eb)
+                elif action == 1:
+                    reward = min(Ed, Eb)
+
+                reward -= cost
+                # print(reward,cost)
+
                 new_state_values, new_state = self.env.step(total_time_steps, state_values, action)
 
                 self.q_table[state,action] = (1 - learning_rate) * self.q_table[state,action] \
                                                 + learning_rate * (reward + discount_factor * np.max(self.q_table[new_state,:]))
 
-                day_reward += cost
+                day_reward += reward
                 Egrid_day += E_grid
                 state = new_state
                 state_values = new_state_values
                 total_time_steps += 1
+
+            # print(day_reward)
             total_time_steps += 1
             total_rewards_in_days.append(day_reward)
             Egrid_in_days.append(Egrid_day)
         Agent.plot_cumulative_costs(total_rewards_in_days,num_days)
-        # Agent.plot_cumulative_Egrid(Egrid_in_days,num_days)
+        Agent.plot_cumulative_Egrid(Egrid_in_days,num_days)
 
     @staticmethod
     def plot_cumulative_costs(total_rewards_in_days,num_days):
@@ -75,9 +86,9 @@ class Agent(object):
 
         fig = plt.figure()
         plt.plot(cum_average_reward)
-        fig.suptitle('Power System Agent Cost Analysis', fontsize=20)
+        fig.suptitle('Power System Agent Reward Analysis', fontsize=20)
         plt.xlabel('days')
-        plt.ylabel('Cost')
+        plt.ylabel('Reward')
         fig.savefig(cum_cost_path)
 
     @staticmethod
@@ -90,7 +101,7 @@ class Agent(object):
         plt.plot(cum_average_Egrid)
         fig.suptitle('Power System Agent Grid Power Analysis', fontsize=20)
         plt.xlabel('days')
-        plt.ylabel('Egrid')
+        plt.ylabel('Reward')
         fig.savefig(Egrid_path)
 
     def save_q_table(self):

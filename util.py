@@ -37,6 +37,7 @@ def preprocess_final_df(df):
     df['Month'], df['Day'], df['Hour'] = zip(*df['Timestamp'].map(create_time))
     del df['Timestamp']
     return df
+    
 def get_data():
     if not os.path.exists(final_csv_path):
         preprocess_data()

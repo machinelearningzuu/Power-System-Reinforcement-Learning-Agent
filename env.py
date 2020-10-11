@@ -18,18 +18,24 @@ class Environment(object):
 
     @staticmethod
     def sample_action():
-        return np.random.choice([0,1, 2])
+        return np.random.choice([0,1])
 
     def step(self, time_step, prev_state_values, action):
+
+        Epv_t = prev_state_values[0]
+        Eb_t = prev_state_values[1]
+        Ed_t = prev_state_values[2]
+
         if action == 0:
             Ac, Ad = 10, 0
+            Eb_t1 = Eb_t + min(Ac, Ebmax - Eb_t)
         elif action == 1:
             Ac, Ad = 0, 10
-        elif action == 2:
-            Ac, Ad = 0, 0
+            Eb_t1 = Eb_t - min(Ad, Ed_t - Epv_t, Eb_t - Ebmin)
+        # elif action == 2:
+        #     Ac, Ad = 0, 0
+        #     Eb_t1 = Eb_t
 
-        Eb_t = prev_state_values[1]
-        Eb_t1 = Eb_t + Ac - Ad
         if Eb_t1 < Ebmin:
             Eb_t1 = Ebmin
         elif Eb_t1 > Ebmax:
@@ -41,24 +47,3 @@ class Environment(object):
         new_state_values = (pv_value, Eb_t1, demand)
         new_state = self.state_space(*new_state_values)
         return new_state_values, new_state
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# print(Environment().reset())
