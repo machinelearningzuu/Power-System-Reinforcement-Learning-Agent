@@ -31,7 +31,7 @@ class Agent(object):
             day_reward = 0
             Egrid_day = 0
             state_values, state = self.env.reset()
-            while (self.env.hours[total_time_steps] != 23):
+            while not (self.env.hours[total_time_steps] == 23 and self.env.hours[total_time_steps+1] == 0):
                 if random.uniform(0,1) < eps:
                     action =  self.env.sample_action()
                 else:
