@@ -26,10 +26,12 @@ class Agent(object):
     def train(self):
         total_rewards_in_days = []
         Egrid_in_days = []
+        Eb_in_days = []
         total_time_steps = 0
         for day in range(num_days):
             day_reward = 0
             Egrid_day = 0
+            Eb_day = 0
             state_values, state = self.env.reset()
             # print("######################### Day {} #######################".format(day))
             while not (self.env.hours[total_time_steps] == 23 and self.env.hours[total_time_steps+1] == 0):
@@ -67,6 +69,7 @@ class Agent(object):
 
                 day_reward += reward
                 Egrid_day += E_grid
+                Eb_day += Eb
                 state = new_state
                 state_values = new_state_values
                 total_time_steps += 1
@@ -75,8 +78,10 @@ class Agent(object):
             total_time_steps += 1
             total_rewards_in_days.append(day_reward)
             Egrid_in_days.append(Egrid_day)
+            Eb_in_days.append(Eb_day)
         Agent.plot_cumulative_costs(total_rewards_in_days,num_days)
         Agent.plot_cumulative_Egrid(Egrid_in_days,num_days)
+        Agent.plot_cumulative_Eb(Eb_in_days,num_days)
 
     @staticmethod
     def plot_cumulative_costs(total_rewards_in_days,num_days):
@@ -90,6 +95,19 @@ class Agent(object):
         plt.xlabel('days')
         plt.ylabel('Reward')
         fig.savefig(cum_cost_path)
+
+    @staticmethod
+    def plot_cumulative_Eb(Eb_in_days,num_days):
+        # plot the cumulative average rewards
+        cum_Eb = np.cumsum(Eb_in_days)
+        cum_average_Eb = cum_Eb / np.arange(1,num_days+1)
+
+        fig = plt.figure()
+        plt.plot(cum_average_Eb)
+        fig.suptitle('Power System Agent Battery Power Analysis', fontsize=20)
+        plt.xlabel('days')
+        plt.ylabel('Reward')
+        fig.savefig(Eb_path)
 
     @staticmethod
     def plot_cumulative_Egrid(Egrid_in_days,num_days):

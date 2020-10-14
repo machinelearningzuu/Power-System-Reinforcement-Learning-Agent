@@ -26,6 +26,7 @@ final_csv_path = 'Data/final_csv.csv'
 q_table_path = 'weights/power system agent q learning.npy'
 cum_cost_path = 'weights/power_system_agent.png'
 Egrid_path = 'weights/E grid effiency.png'
+Eb_path = 'weights/E battery effiency.png'
 data_columns = ['Month','Day','Hour','PV_component','Demand']
 
 #Solar DNN estimator
