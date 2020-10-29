@@ -21,67 +21,69 @@ class Agent(object):
             self.load_q_table()
         else:
             print("Q table Initializing !!!\n")
-            self.q_table = np.random.uniform(low = -1, high = 1 , size = (num_states,num_actions))
+            # self.q_table = np.random.uniform(low = -1, high = 1 , size = (num_states,num_actions))
+            self.q_table = np.random.randn(num_states,num_actions)
 
     def train(self):
         total_rewards_in_days = []
         Egrid_in_days = []
         Eb_in_days = []
         total_time_steps = 0
-        for day in range(num_days):
+        for day in range(1 , num_days+1 , verbose_):
             day_reward = 0
             Egrid_day = 0
             Eb_day = 0
             state_values, state = self.env.reset()
-            # print("######################### Day {} #######################".format(day))
-            while not (self.env.hours[total_time_steps] == 23 and self.env.hours[total_time_steps+1] == 0):
-                if random.uniform(0,1) < eps:
-                    action =  self.env.sample_action()
-                else:
-                    action =  np.argmax(self.q_table[state,:])
+            for i in range(verbose_):
+                while not (self.env.hours[total_time_steps] == 23 and self.env.hours[total_time_steps+1] == 0):
+                        if random.uniform(0,1) < eps:
+                            action =  self.env.sample_action()
+                        else:
+                            action =  np.argmax(self.q_table[state,:])
 
-                Epv = state_values[0]
-                Eb  = state_values[1]
-                Ed  = state_values[2]
-                E_grid = Ed - Epv - Eb
+                        Epv = state_values[0]
+                        Eb  = state_values[1]
+                        Ed  = state_values[2]
+                        E_grid = Ed - Epv - Eb
 
 
-                if 18 <= self.env.hours[total_time_steps] < 22:
-                    c = 26.6
-                elif 5 <= self.env.hours[total_time_steps] < 18:
-                    c = 21.8
-                else:
-                    c = 15.4
+                        if 18 <= self.env.hours[total_time_steps] < 22:
+                            c = 26.6
+                        elif 5 <= self.env.hours[total_time_steps] < 18:
+                            c = 21.8
+                        else:
+                            c = 15.4
 
-                cost = cost_lr * abs(c*max([E_grid, 0]) + p*min([E_grid, 0]))
-                if action == 0:
-                    reward = min(Epv, Ebmax - Eb)
-                elif action == 1:
-                    reward = min(Ed, Eb)
+                        cost = cost_lr * abs(c*max([E_grid, 0]) + p*min([E_grid, 0]))
+                        if action == 0:
+                            reward = min(Epv, Ebmax - Eb)
+                        elif action == 1:
+                            reward = min(Ed, Eb)
 
-                reward -= cost
-                # print(reward,cost)
+                        reward -= cost
+                        # print(reward,cost)
 
-                new_state_values, new_state = self.env.step(total_time_steps, state_values, action)
+                        new_state_values, new_state = self.env.step(total_time_steps, state_values, action)
 
-                self.q_table[state,action] = (1 - learning_rate) * self.q_table[state,action] \
-                                                + learning_rate * (reward + discount_factor * np.max(self.q_table[new_state,:]))
+                        self.q_table[state,action] = (1 - learning_rate) * self.q_table[state,action] \
+                                                        + learning_rate * (reward + discount_factor * np.max(self.q_table[new_state,:]))
 
-                day_reward += reward
-                Egrid_day += E_grid
-                Eb_day += Eb
-                state = new_state
-                state_values = new_state_values
-                total_time_steps += 1
+                        day_reward += reward
+                        Egrid_day += E_grid
+                        Eb_day += Eb
+                        state = new_state
+                        state_values = new_state_values
+                        total_time_steps += 1
 
-            # print(day_reward)
             total_time_steps += 1
             total_rewards_in_days.append(day_reward)
-            Egrid_in_days.append(Egrid_day)
-            Eb_in_days.append(Eb_day)
-        Agent.plot_cumulative_costs(total_rewards_in_days,num_days)
-        Agent.plot_cumulative_Egrid(Egrid_in_days,num_days)
-        Agent.plot_cumulative_Eb(Eb_in_days,num_days)
+            Egrid_in_days.append(Eb_day)
+            Eb_in_days.append(Egrid_day) 
+
+        num_days_ = int(num_days/verbose_)
+        Agent.plot_cumulative_costs(total_rewards_in_days,num_days_)
+        Agent.plot_cumulative_Egrid(Egrid_in_days,num_days_)
+        Agent.plot_cumulative_Eb(Eb_in_days,num_days_)
 
     @staticmethod
     def plot_cumulative_costs(total_rewards_in_days,num_days):

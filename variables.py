@@ -10,11 +10,12 @@ Dmax = 340
 n_bins = 10
 
 p = 22
-learning_rate = 1e-4
-cost_lr = 1e-2
-eps = 0.6
-discount_factor = 0.99
-num_days = 365
+learning_rate = 1e-3
+cost_lr = 1e-4
+eps = 0.5
+discount_factor = 0.9
+num_days = 1095
+verbose_ = 1
 
 initial_state = (PVmin, Ebmax, Dmin)
 initial_action = 2 # (0 - charging, 1 - discharging, 2 - Nothing)
